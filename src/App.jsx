@@ -30,12 +30,15 @@
 
 
 import React, { useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import Navbar from "./Components/Navbar";
 import Sidebar from "./Components/Sidebar";
 import { Route, Routes } from "react-router-dom";
 import Add from "./Pages/Add";
 import List from "./Pages/List";
 import Orders from "./Pages/Orders";
+import Category from "./Pages/Category";
 // import Login from "./Components/Login";
 // import { ToastContainer } from 'react-toastify';
 // import 'react-toastify/dist/ReactToastify.css';
@@ -67,11 +70,22 @@ const App = () => {
                 <Route path="/add" element={<Add/>} />
                 <Route path="/list" element={<List/>} />
                 <Route path="/orders" element={<Orders/>} />
+                <Route path="/category" element={<Category/>} />
               </Routes> 
             </div>
           </div>
         </div>
       
+
+        <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 };
