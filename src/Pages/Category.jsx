@@ -131,8 +131,8 @@ const Category = () => {
         setEditingCategory(cat);
         setCategoryName(cat.category_name);
         setCategoryCategory(cat.category_category);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-        
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
     };
 
     const handleEditSubmit = async () => {
@@ -168,11 +168,44 @@ const Category = () => {
 
                     <div>
                         <p className="mb-2">Upload Image</p>
-                        <label htmlFor="imageUpload">
-                            <img className="w-20 cursor-pointer" src={image ? URL.createObjectURL(image) : editingCategory.category_image || assets.upload_area} alt="upload preview" />
-                            <input type="file" id="imageUpload" hidden onChange={handleImageChange} />
-                        </label>
+
+                        <div className="relative w-20 h-20">
+                            {/* Image button for upload */}
+                            <img
+                                src={assets.upload_area}
+                                alt="upload"
+                                className="w-full h-full object-cover cursor-pointer"
+                            />
+
+                            {/* File input styled to sit over the image */}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+                            />
+                        </div>
+
+                        {/* Preview below */}
+                        <div className="mt-3">
+                            {image ? (
+                                <img
+                                    src={URL.createObjectURL(image)}
+                                    alt="preview"
+                                    className="w-20 h-20 object-cover"
+                                />
+                            ) : editingCategory?.category_image ? (
+                                <img
+                                    src={editingCategory.category_image}
+                                    alt="existing"
+                                    className="w-20 h-20 object-cover "
+                                />
+                            ) : null}
+                        </div>
                     </div>
+
+
+
 
                     <div className="w-full">
                         <p className="mb-2">Category Name</p>

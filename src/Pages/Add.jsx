@@ -178,7 +178,6 @@
 // };
 
 // export default Add;
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { assets } from "../assets/assets";
@@ -186,7 +185,7 @@ import { toast } from "react-toastify";
 
 const Add = () => {
   const [images, setImages] = useState([]);
-  const [existingImages, setExistingImages] = useState([]); // 🆕
+  const [existingImages, setExistingImages] = useState([]);
   const [name, setName] = useState("");
   const [category_category, setCategoryCategory] = useState("");
   const [oldPrice, setOldPrice] = useState("");
@@ -228,7 +227,9 @@ const Add = () => {
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     setImages(files);
+    setExistingImages([]); // 🧹 Clear existing images from UI
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -243,6 +244,10 @@ const Add = () => {
       formData.append("offer", offer);
 
       images.forEach((image) => formData.append("image", image));
+
+      // Append existingImages array as a JSON string
+      formData.append("existingImages", JSON.stringify(existingImages));
+
       if (editingId) {
         await axios.put(`http://localhost:4000/api/category_product/${editingId}`, formData);
         toast.success("Product updated successfully!");
@@ -263,7 +268,7 @@ const Add = () => {
 
   const resetForm = () => {
     setImages([]);
-    setExistingImages([]); // 🆕
+    setExistingImages([]);
     setName("");
     setCategoryCategory("");
     setOldPrice("");
@@ -280,7 +285,7 @@ const Add = () => {
     setNewPrice(product.newPrice);
     setOffer(product.offer);
     setImages([]);
-    setExistingImages(product.images || []); // 🆕
+    setExistingImages(product.images || []);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -321,19 +326,17 @@ const Add = () => {
 
         <div>
           <p className="mb-2">Upload Images</p>
-          {images.length === 0 && existingImages.length === 0 && (
-            <label htmlFor="imageUpload" className="cursor-pointer">
-              <img className="w-20 h-20 object-cover" src={assets.upload_area} alt="upload" />
-            </label>
-          )}
+          <label htmlFor="imageUpload" className="cursor-pointer inline-block">
+            <img className="w-20 h-20 object-cover  border-gray-400" src={assets.upload_area} alt="upload" />
+          </label>
           <input type="file" id="imageUpload" hidden multiple accept="image/*" onChange={handleImageChange} />
-          
+
+          <input type="file" id="imageUpload" hidden multiple accept="image/*" onChange={handleImageChange} />
+
           <div className="flex gap-2 mt-2 flex-wrap">
-            {/* Show existing backend images */}
             {existingImages.map((img, index) => (
-              <img key={`existing-${index}`} src={img} alt="existing" className="w-20 h-20 object-cover border rounded" />
+              <img key={`existing-${index}`} src={img} alt="existing" className="w-20 h-20 object-cover rounded" />
             ))}
-            {/* Show newly added images */}
             {images.map((img, index) => (
               <img key={`new-${index}`} src={URL.createObjectURL(img)} alt="new" className="w-20 h-20 object-cover border rounded" />
             ))}
@@ -342,23 +345,12 @@ const Add = () => {
 
         <div className="w-full">
           <p className="mb-2">Album Name</p>
-          <input
-            className="w-full max-w-[500px] px-3 py-2 border"
-            type="text"
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+          <input className="w-full max-w-[500px] px-3 py-2 border" type="text" required value={name} onChange={(e) => setName(e.target.value)} />
         </div>
 
         <div className="w-full">
           <p className="mb-2">Album Category</p>
-          <select
-            className="px-3 py-2 w-full max-w-[500px] border"
-            value={category_category}
-            onChange={(e) => setCategoryCategory(e.target.value)}
-            required
-          >
+          <select className="px-3 py-2 w-full max-w-[500px] border" value={category_category} onChange={(e) => setCategoryCategory(e.target.value)} required>
             <option value="">Select Category</option>
             {categories.map((cat, idx) => (
               <option key={idx} value={cat}>{cat}</option>
@@ -369,49 +361,24 @@ const Add = () => {
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:gap-8">
           <div>
             <p className="mb-2">Old Price</p>
-            <input
-              className="w-full px-3 py-2 sm:w-[120px] border"
-              type="number"
-              value={oldPrice}
-              onChange={(e) => setOldPrice(e.target.value)}
-            />
+            <input className="w-full px-3 py-2 sm:w-[120px] border" type="number" value={oldPrice} onChange={(e) => setOldPrice(e.target.value)} />
           </div>
-
           <div>
             <p className="mb-2">New Price</p>
-            <input
-              className="w-full px-3 py-2 sm:w-[120px] border"
-              type="number"
-              value={newPrice}
-              onChange={(e) => setNewPrice(e.target.value)}
-            />
+            <input className="w-full px-3 py-2 sm:w-[120px] border" type="number" value={newPrice} onChange={(e) => setNewPrice(e.target.value)} />
           </div>
-
           <div>
             <p className="mb-2">Offer</p>
-            <input
-              className="w-full px-3 py-2 sm:w-[120px] border"
-              type="text"
-              value={offer}
-              onChange={(e) => setOffer(e.target.value)}
-            />
+            <input className="w-full px-3 py-2 sm:w-[120px] border" type="text" value={offer} onChange={(e) => setOffer(e.target.value)} />
           </div>
         </div>
 
         <div className="flex gap-2">
-          <button
-            className={`w-28 py-3 mt-4 ${loading ? "bg-gray-600" : "bg-black"} text-white`}
-            type="submit"
-            disabled={loading}
-          >
+          <button className={`w-28 py-3 mt-4 ${loading ? "bg-gray-600" : "bg-black"} text-white`} type="submit" disabled={loading}>
             {loading ? "Processing..." : editingId ? "Update" : "Add"}
           </button>
           {editingId && (
-            <button
-              className="w-28 py-3 mt-4 bg-gray-600 text-white"
-              type="button"
-              onClick={handleCancelEdit}
-            >
+            <button className="w-28 py-3 mt-4 bg-gray-600 text-white" type="button" onClick={handleCancelEdit}>
               Cancel
             </button>
           )}
@@ -431,26 +398,17 @@ const Add = () => {
               <p className="mt-3 mb-2 font-medium">Name: {product.name}</p>
               <p>Category: {product.category_category}</p>
             </div>
-
             <div>
               <p>Old Price: ₹{product.oldPrice}</p>
               <p>New Price: ₹{product.newPrice}</p>
               <p>Offer: {product.offer}</p>
             </div>
-
             <div></div>
-
             <div className="flex gap-2 justify-end sm:col-span-3 lg:col-span-1">
-              <button
-                onClick={() => handleEdit(product)}
-                className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-              >
+              <button onClick={() => handleEdit(product)} className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
                 Edit
               </button>
-              <button
-                onClick={() => handleDelete(product._id)}
-                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-              >
+              <button onClick={() => handleDelete(product._id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
                 Delete
               </button>
             </div>
