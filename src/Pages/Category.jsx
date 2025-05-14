@@ -256,10 +256,35 @@ const Category = () => {
 
                     <div>
                         <p className="mb-2">Upload Image</p>
-                        <label htmlFor="imageUpload">
-                            <img className="w-20 cursor-pointer" src={image ? URL.createObjectURL(image) : assets.upload_area} alt="upload preview" />
-                            <input type="file" id="imageUpload" hidden onChange={handleImageChange} />
-                        </label>
+                        <div>
+
+                            <label htmlFor="imageUpload">
+                                <img
+                                    className="w-20 h-20 object-cover cursor-pointer"
+                                    src={assets.upload_area}
+                                    alt="upload"
+                                />
+                                <input
+                                    type="file"
+                                    id="imageUpload"
+                                    accept="image/*"
+                                    hidden
+                                    onChange={handleImageChange}
+                                />
+                            </label>
+
+                            {/* Preview image below the upload box */}
+                            {image && (
+                                <div className="mt-3">
+                                    <img
+                                        src={URL.createObjectURL(image)}
+                                        alt="preview"
+                                        className="w-20 h-20 object-cover"
+                                    />
+                                </div>
+                            )}
+                        </div>
+
                     </div>
 
                     <div className="w-full">

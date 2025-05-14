@@ -335,17 +335,17 @@ const Add = () => {
 
           <div className="flex gap-2 mt-2 flex-wrap">
             {existingImages.map((img, index) => (
-              <img key={`existing-${index}`} src={img} alt="existing" className="w-20 h-20 object-cover rounded" />
+              <img key={`existing-${index}`} src={img} alt="existing" className="w-20 h-20 object-cover " />
             ))}
             {images.map((img, index) => (
-              <img key={`new-${index}`} src={URL.createObjectURL(img)} alt="new" className="w-20 h-20 object-cover border rounded" />
+              <img key={`new-${index}`} src={URL.createObjectURL(img)} alt="new" className="w-20 h-20 object-cover  " />
             ))}
           </div>
         </div>
 
         <div className="w-full">
           <p className="mb-2">Album Name</p>
-          <input className="w-full max-w-[500px] px-3 py-2 border" type="text" required value={name} onChange={(e) => setName(e.target.value)} />
+          <input className="w-full max-w-[500px] px-3 py-2 border" type="text" placeholder="Type here" required value={name} onChange={(e) => setName(e.target.value)} />
         </div>
 
         <div className="w-full">
@@ -361,15 +361,15 @@ const Add = () => {
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:gap-8">
           <div>
             <p className="mb-2">Old Price</p>
-            <input className="w-full px-3 py-2 sm:w-[120px] border" type="number" value={oldPrice} onChange={(e) => setOldPrice(e.target.value)} />
+            <input className="w-full px-3 py-2 sm:w-[120px] border" type="number" placeholder="Type here" value={oldPrice} onChange={(e) => setOldPrice(e.target.value)} />
           </div>
           <div>
             <p className="mb-2">New Price</p>
-            <input className="w-full px-3 py-2 sm:w-[120px] border" type="number" value={newPrice} onChange={(e) => setNewPrice(e.target.value)} />
+            <input className="w-full px-3 py-2 sm:w-[120px] border" type="number" placeholder="Type here" value={newPrice} onChange={(e) => setNewPrice(e.target.value)} />
           </div>
           <div>
             <p className="mb-2">Offer</p>
-            <input className="w-full px-3 py-2 sm:w-[120px] border" type="text" value={offer} onChange={(e) => setOffer(e.target.value)} />
+            <input className="w-full px-3 py-2 sm:w-[120px] border" type="text" placeholder="Type here" value={offer} onChange={(e) => setOffer(e.target.value)} />
           </div>
         </div>
 
