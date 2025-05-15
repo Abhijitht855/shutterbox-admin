@@ -40,6 +40,7 @@ import List from "./Pages/List";
 import Orders from "./Pages/Orders";
 import Category from "./Pages/Category";
 import Checkout from "./Pages/Checkout";
+import User from "./Pages/User";
 // import Login from "./Components/Login";
 // import { ToastContainer } from 'react-toastify';
 // import 'react-toastify/dist/ReactToastify.css';
@@ -73,6 +74,8 @@ const App = () => {
                 <Route path="/orders" element={<Orders/>} />
                 <Route path="/category" element={<Category/>} />
                 <Route path="/checkout" element={<Checkout/>} />
+                <Route path="/user" element={<User/>} />
+
               </Routes> 
             </div>
           </div>
