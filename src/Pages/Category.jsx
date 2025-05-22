@@ -51,6 +51,8 @@ const Category = () => {
     const [categories, setCategories] = useState([]);
     const [editLoading, setEditLoading] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
+    const [listLoading, setListLoading] = useState(true);
+
 
     // Delete modal state
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -61,13 +63,17 @@ const Category = () => {
     }, []);
 
     const fetchCategories = async () => {
+        setListLoading(true);
         try {
             const response = await axios.get('http://localhost:4000/api/categories');
             setCategories(response.data || []);
         } catch (error) {
             toast.error("Failed to load categories");
+        } finally {
+            setListLoading(false);
         }
     };
+
 
     const handleImageChange = (e) => {
         setImage(e.target.files[0]);
@@ -324,41 +330,48 @@ const Category = () => {
             {/* Category List */}
             <h3 className="text-lg font-semibold mb-4">Categories List</h3>
             <div>
-                {categories.map((cat) => (
-                    <div
-                        key={cat._id}
-                        className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2fr_1fr_1fr_1fr] gap-3 items-start border-2 border-gray-200 p-5 md:p-8 my-3 text-xs sm:text-sm text-gray-700 relative"
-                    >
-                        <img
-                            className="w-12 h-12 object-cover"
-                            src={cat.category_image || assets.parcel_icon}
-                            alt="category"
-                        />
+                {listLoading ? (
+                    <div className="text-center py-8 text-gray-500">Loading categories...</div>
+                ) : categories.length === 0 ? (
+                    <div className="text-center py-8 text-gray-400">No categories found.</div>
+                ) : (
+                    categories.map((cat) => (
+                        <div
+                            key={cat._id}
+                            className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2fr_1fr_1fr_1fr] gap-3 items-start border-2 border-gray-200 p-5 md:p-8 my-3 text-xs sm:text-sm text-gray-700 relative"
+                        >
+                            <img
+                                className="w-12 h-12 object-cover"
+                                src={cat.category_image || assets.parcel_icon}
+                                alt="category"
+                            />
 
-                        <div>
-                            <p className="p-0.5"><span>ID: {cat.category_id}</span></p>
-                            <p className="mt-3 mb-2 font-medium">Name: {cat.category_name}</p>
-                            <p>Category: {cat.category_category}</p>
+                            <div>
+                                <p className="p-0.5"><span>ID: {cat.category_id}</span></p>
+                                <p className="mt-3 mb-2 font-medium">Name: {cat.category_name}</p>
+                                <p>Category: {cat.category_category}</p>
+                            </div>
+                            <div></div>
+                            <div></div>
+                            <div className="flex gap-2 justify-end sm:col-span-3 lg:col-span-1">
+                                <button
+                                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                                    onClick={() => handleEdit(cat)}
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                                    onClick={() => confirmDeletePrompt(cat)}
+                                >
+                                    Delete
+                                </button>
+                            </div>
                         </div>
-                        <div></div>
-                        <div></div>
-                        <div className="flex gap-2 justify-end sm:col-span-3 lg:col-span-1">
-                            <button
-                                className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                                onClick={() => handleEdit(cat)}
-                            >
-                                Edit
-                            </button>
-                            <button
-                                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                                onClick={() => confirmDeletePrompt(cat)}
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                ))}
+                    ))
+                )}
             </div>
+
 
             {/* Delete Confirmation Modal */}
             {showDeleteModal && (

@@ -178,6 +178,7 @@
 // };
 
 // export default Add;
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { assets } from "../assets/assets";
@@ -197,6 +198,8 @@ const Add = () => {
   const [editingId, setEditingId] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
+  const [productsLoading, setProductsLoading] = useState(false);
+
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -213,12 +216,17 @@ const Add = () => {
 
   const fetchProducts = async () => {
     try {
+      setProductsLoading(true); // 👈 Start loading
       const res = await axios.get("http://localhost:4000/api/category_product");
       setProducts(res.data);
     } catch (error) {
       console.error("Failed to fetch products:", error);
+      toast.error("Failed to load products.");
+    } finally {
+      setProductsLoading(false); // 👈 Stop loading
     }
   };
+
 
   useEffect(() => {
     fetchProducts();
@@ -229,7 +237,7 @@ const Add = () => {
     setImages(files);
     setExistingImages([]); // 🧹 Clear existing images from UI
   };
-  
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -387,34 +395,39 @@ const Add = () => {
 
       <h3 className="text-lg font-semibold my-6">Products List</h3>
       <div>
-        {products.map((product) => (
-          <div
-            key={product._id}
-            className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2fr_1fr_1fr_1fr] gap-3 items-start border-2 border-gray-200 p-5 md:p-8 my-3 text-xs sm:text-sm text-gray-700 relative"
-          >
-            <img className="w-12 h-12 object-cover" src={product.images[0] || assets.parcel_icon} alt="product" />
-            <div>
-              <p className="p-0.5"><span>ID: {product.category_id}</span></p>
-              <p className="mt-3 mb-2 font-medium">Name: {product.name}</p>
-              <p>Category: {product.category_category}</p>
+        {productsLoading ? (
+          <p className="text-center py-6">Loading products...</p> // You can add a spinner here too
+        ) : (
+          products.map((product) => (
+            <div
+              key={product._id}
+              className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2fr_1fr_1fr_1fr] gap-3 items-start border-2 border-gray-200 p-5 md:p-8 my-3 text-xs sm:text-sm text-gray-700 relative"
+            >
+              <img className="w-12 h-12 object-cover" src={product.images[0] || assets.parcel_icon} alt="product" />
+              <div>
+                <p className="p-0.5"><span>ID: {product.category_id}</span></p>
+                <p className="mt-3 mb-2 font-medium">Name: {product.name}</p>
+                <p>Category: {product.category_category}</p>
+              </div>
+              <div>
+                <p>Old Price: ₹{product.oldPrice}</p>
+                <p>New Price: ₹{product.newPrice}</p>
+                <p>Offer: {product.offer}</p>
+              </div>
+              <div></div>
+              <div className="flex gap-2 justify-end sm:col-span-3 lg:col-span-1">
+                <button onClick={() => handleEdit(product)} className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                  Edit
+                </button>
+                <button onClick={() => handleDelete(product._id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                  Delete
+                </button>
+              </div>
             </div>
-            <div>
-              <p>Old Price: ₹{product.oldPrice}</p>
-              <p>New Price: ₹{product.newPrice}</p>
-              <p>Offer: {product.offer}</p>
-            </div>
-            <div></div>
-            <div className="flex gap-2 justify-end sm:col-span-3 lg:col-span-1">
-              <button onClick={() => handleEdit(product)} className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-                Edit
-              </button>
-              <button onClick={() => handleDelete(product._id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
+
 
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/75 flex justify-center items-center z-50">

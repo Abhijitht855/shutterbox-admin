@@ -51,6 +51,8 @@
 // }
 
 // export default Checkout
+
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -59,17 +61,22 @@ const Checkout = () => {
   const [checkoutData, setCheckoutData] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
 
   useEffect(() => {
     fetchCheckoutData();
   }, []);
 
   const fetchCheckoutData = async () => {
+    setLoading(true);
     try {
       const response = await axios.get('http://localhost:4000/api/checkout');
       setCheckoutData((response.data || []).reverse());
     } catch (error) {
       toast.error('Failed to load checkout data');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,10 +94,13 @@ const Checkout = () => {
     <div className=" max-w-6xl mx-auto">
       <h3 className="text-2xl font-bold mb-6 text-center">Checkout Page</h3>
 
-      {checkoutData.length === 0 ? (
-        <p className="text-gray-500 text-center">No checkout data found.</p>
+      {loading ? (
+        <p className="text-center text-gray-500">Loading checkout data...</p>
+      ) : checkoutData.length === 0 ? (
+        <p className="text-center text-gray-500">No checkout data found.</p>
       ) : (
         checkoutData.map((item, index) => (
+
           <div
             key={item._id || index}
             className="bg-white rounded-lg shadow-md p-4 sm:p-5 mb-6 border border-gray-200"
@@ -132,8 +142,10 @@ const Checkout = () => {
               </button>
             </div>
           </div>
+
         ))
       )}
+
 
       {/* Modal */}
       {isModalOpen && selectedUser && (
@@ -159,3 +171,4 @@ const Checkout = () => {
 };
 
 export default Checkout;
+

@@ -11,22 +11,22 @@
 //   const [orders,setOrders]=useState([])
 
 //   const fetchAllOrders=async()=>{
-   
+
 //     if (!token) {
 //       return null
 //     }
 
 //     try {
 //       const response = await axios.post(backendURL + '/api/order/list',{},{headers:{token}})
-      
 
-      
+
+
 //       if(response.data.success){
 //         setOrders(response.data.orders.reverse())
 //       }else{
 //         toast.error(response.data.message)
 //       }
-      
+
 //     } catch (error) {
 //       toast.error(error.message)
 //     }
@@ -41,7 +41,7 @@
 //     } catch (error) {
 //       console.log(error);
 //       toast.error(response.data.message)
-      
+
 //     }
 //   }
 
@@ -325,7 +325,6 @@
 
 // export default Orders;
 
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { assets } from "../assets/assets";
@@ -335,6 +334,11 @@ const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [courierModalOpen, setCourierModalOpen] = useState(false);
+  const [courierCompany, setCourierCompany] = useState("");
+  const [trackingCode, setTrackingCode] = useState("");
+  const [currentOrderId, setCurrentOrderId] = useState(null);
 
   useEffect(() => {
     fetchOrders();
@@ -349,13 +353,21 @@ const Orders = () => {
     }
   };
 
-  const handleStatusChange = async (orderId, newStatus) => {
-    try {
-      const payload = { order_status: newStatus };
+  const handleStatusChange = (orderId, newStatus) => {
+    if (newStatus === "dispatched") {
+      setCurrentOrderId(orderId);
+      setCourierModalOpen(true);
+    } else {
+      updateOrderStatus(orderId, newStatus);
+    }
+  };
 
-      if (newStatus === "dispatched") {
-        payload.courier_company = prompt("Enter courier company:");
-        payload.tracking_code = prompt("Enter tracking code:");
+  const updateOrderStatus = async (orderId, status, courier = "", tracking = "") => {
+    try {
+      const payload = { order_status: status };
+      if (status === "dispatched") {
+        payload.courier_company = courier;
+        payload.tracking_code = tracking;
       }
 
       await axios.put(`http://localhost:4000/api/order/${orderId}`, payload);
@@ -391,14 +403,12 @@ const Orders = () => {
             className="bg-white rounded-lg shadow-md border border-gray-200 p-4 sm:p-6 mb-6"
           >
             <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
-              {/* Product image */}
               <img
                 src={order.product_image || assets.parcel_icon}
                 alt="product"
-                className="w-16 h-16 object-contain "
+                className="w-16 h-16 object-contain"
               />
 
-              {/* Product info */}
               <div className="flex-1">
                 <p className="font-semibold text-base sm:text-lg mb-1">{order.product}</p>
                 <p className="text-sm">Pages: {order.pages}</p>
@@ -406,16 +416,13 @@ const Orders = () => {
               </div>
             </div>
 
-            {/* Grid section */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4 text-sm">
-              {/* Shipping info */}
               <div>
                 <h4 className="font-semibold mb-1">Shipping Info</h4>
                 <p><strong>Courier:</strong> {order.courier_company || "N/A"}</p>
                 <p><strong>Tracking:</strong> {order.tracking_code || "N/A"}</p>
               </div>
 
-              {/* Order info */}
               <div>
                 <h4 className="font-semibold mb-1">Order Details</h4>
                 <p><strong>Order ID:</strong> {order.order_id}</p>
@@ -423,7 +430,6 @@ const Orders = () => {
                 <p><strong>Date:</strong> {new Date(order.date).toLocaleDateString()}</p>
               </div>
 
-              {/* Action buttons */}
               <div>
                 <h4 className="font-semibold mb-2">Actions</h4>
                 <select
@@ -448,7 +454,7 @@ const Orders = () => {
         ))
       )}
 
-      {/* Modal */}
+      {/* User Details Modal */}
       {isModalOpen && selectedUser && (
         <div className="fixed inset-0 bg-black/75 z-50 flex justify-center items-center px-4">
           <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-xl">
@@ -457,7 +463,6 @@ const Orders = () => {
               <p><strong>Name:</strong> {selectedUser.name}</p>
               <p><strong>Email:</strong> {selectedUser.email}</p>
               <p><strong>Phone:</strong> {selectedUser.phone}</p>
-              {/* Add more user fields as needed */}
             </div>
             <button
               onClick={() => setIsModalOpen(false)}
@@ -465,6 +470,59 @@ const Orders = () => {
             >
               Close
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Courier Details Modal */}
+      {courierModalOpen && (
+        <div className="fixed inset-0 bg-black/75 z-50 flex justify-center items-center px-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg space-y-4">
+            <h2 className="text-lg font-semibold">Courier Details</h2>
+            <div>
+              <label className="block text-sm mb-1">Courier Company</label>
+              <input
+                type="text"
+                className="w-full border p-2 rounded"
+                value={courierCompany}
+                onChange={(e) => setCourierCompany(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-sm mb-1">Tracking Code</label>
+              <input
+                type="text"
+                className="w-full border p-2 rounded"
+                value={trackingCode}
+                onChange={(e) => setTrackingCode(e.target.value)}
+              />
+            </div>
+            <div className="flex gap-2 mt-4">
+              <button
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white p-2 rounded"
+                onClick={() => {
+                  updateOrderStatus(currentOrderId, "dispatched", courierCompany, trackingCode);
+                  setCourierModalOpen(false);
+                  setCourierCompany("");
+                  setTrackingCode("");
+                  setCurrentOrderId(null);
+                }}
+              >
+                Submit
+              </button>
+
+              <button
+                className="flex-1 bg-gray-300 hover:bg-gray-400 text-black p-2 rounded"
+                onClick={() => {
+                  setCourierModalOpen(false);
+                  setCourierCompany("");
+                  setTrackingCode("");
+                  setCurrentOrderId(null);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
