@@ -170,20 +170,6 @@ const Sidebar = () => {
           <img className="w-5 h-5" src={assets.order_icon} alt="User List" />
           <p className="hidden md:block font-semibold">User List</p>
         </NavLink>
-
-        <NavLink
-          className={({ isActive }) =>
-            `flex items-center gap-3 px-3 py-2 rounded-l-lg transition-colors duration-200 border border-r-0 ${
-              isActive
-                ? "bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600"
-                : "hover:bg-gray-100"
-            }`
-          }
-          to="/list"
-        >
-          <img className="w-5 h-5" src={assets.order_icon} alt="List Items" />
-          <p className="hidden md:block font-semibold">List Items</p>
-        </NavLink>
       </div>
     </div>
   );

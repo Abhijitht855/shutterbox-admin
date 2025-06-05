@@ -52,15 +52,13 @@
 
 // export default User;
 
-
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const User = () => {
   const [users, setUsers] = useState([]);
-
+  const [loading, setLoading] = useState(true); // loading state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -73,14 +71,18 @@ const User = () => {
       setUsers(res.data);
     } catch (error) {
       console.error("Failed to fetch users:", error);
+    } finally {
+      setLoading(false); // stop loading either way
     }
   };
-
 
   return (
     <div className="p-4 md:p-8">
       <h2 className="text-xl md:text-2xl font-bold mb-4">Registered Users</h2>
-      {users.length === 0 ? (
+
+      {loading ? (
+        <p className="text-gray-600">Loading...</p>
+      ) : users.length === 0 ? (
         <p>No users found.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -94,12 +96,11 @@ const User = () => {
               <p className="text-gray-600 capitalize">Role: {user.role}</p>
               <p className="text-gray-500 text-xs mt-2">ID: {user._id}</p>
               <button
-    onClick={() => navigate(`/orders?user=${user._id}`)}
-    className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-sm"
-  >
-    Orders
-  </button>
-
+                onClick={() => navigate(`/orders?user=${user._id}`)}
+                className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-sm"
+              >
+                Orders
+              </button>
             </div>
           ))}
         </div>
